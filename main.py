@@ -15,4 +15,7 @@ def print_hi(name):
 if __name__ == '__main__':
     print_hi('PyCharm')
     pt = POS_Tagger()
-    tags = pt.ta
+    tags = pt.tag('Jovica je išao u školu. Marija je dobra devojka.')
+    print(tags)
+
+# See PyCharm help at https://www.jetbrains.com/help/pycharm/
