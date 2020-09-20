@@ -22,4 +22,27 @@ def transliterate_cir2lat(text: str) -> str:
 def transliterate_lat2cir(text: str) -> str:
     """
     Pretvara tekst napisan na laticini u ćirilicu
-    :par
+    :param text: Tekst na latinici
+    :return: Tekst na ćirilici
+    """
+    mappings = {"a": "а", "b": "б", "v": "в", "g": "г", "d": "д", "đ": "ђ", "e": "е", "ž": "ж", "z": "з", "i": "и",
+                "j": "ј", "k": "к", "l": "л", "lj": "љ", "m": "м", "n": "н", "nj": "њ", "o": "о", "p": "п", "r": "р",
+                "s": "с", "t": "т", "ć": "ћ", "u": "у", "f": "ф", "h": "х", "c": "ц", "č": "ч", "dž": "џ", "š": "ш",
+                "A": "А", "B": "Б", "V": "В", "G": "Г", "D": "Д", "Đ": "Ђ", "E": "Е", "Ž": "Ж", "Z": "З", "I": "И",
+                "J": "Ј", "K": "К", "L": "Л", "Lj": "Љ", "LJ": "Љ", "M": "М", "N": "Н", "Nj": "Њ", "NJ": "Њ", "O": "О",
+                "P": "П", "R": "Р",
+                "S": "С", "T": "Т", "Ć": "Ћ", "U": "У", "F": "Ф", "H": "Х", "C": "Ц", "Č": "Ч", "Dž": "Џ", "DŽ": "Џ",
+                "Š": "Ш"}
+    translit = ""
+    i = 0
+    while i < len(text):
+        if text[i] in mappings.keys():
+            if text[i] in ["l", "n", "L", "N"] and i + 1 < len(text) and (text[i + 1] == "j" or text[i + 1] == "J"):
+                translit = translit + mappings[text[i] + text[i + 1]]
+                i = i + 1
+            elif text[i] in ["d", "D"] and i + 1 < len(text) and (text[i + 1] == "ž" or text[i + 1] == "Ž"):
+                translit = translit + mappings[text[i] + text[i + 1]]
+                i = i + 1
+            else:
+                translit = translit + mappings[text[i]]
+        
