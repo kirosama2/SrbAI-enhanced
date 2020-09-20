@@ -38,4 +38,9 @@ setuptools.setup(
         "nlu"
 
     ],
-   
+    package_dir={"": "src"},
+    package_data={'': extra_files},
+    include_package_data=True,
+    packages=setuptools.find_packages(where="src"),
+    python_requires=">=3.7",
+)
