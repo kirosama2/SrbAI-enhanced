@@ -45,4 +45,7 @@ def transliterate_lat2cir(text: str) -> str:
                 i = i + 1
             else:
                 translit = translit + mappings[text[i]]
-        
+        else:
+            translit = translit + text[i]
+        i = i + 1
+    return translit
