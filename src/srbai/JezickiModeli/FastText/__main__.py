@@ -27,4 +27,34 @@ def model_training():
     # Step 3. Train the NN
     # The result of training will be the weights that lead to the embedding layer
     # If plot graph is true, it will plot the loss graph as well
-    vector_space = train(word_map, ngram_vectors, word_vector
+    vector_space = train(word_map, ngram_vectors, word_vectors, cfg.model_config, plot_graph=False)
+
+    # Optional Step. Save the weights that lead to the embedding layer
+    serialize_object(vector_space, cfg.language_config.get_vector_space_file_path())
+
+
+def similarity_for_word():
+    """
+    Example function that shows how finding most similar words for a word works
+    """
+    # Step 1. Load configs for both the model and language
+    cfg = GlobalConfig("5gram_5sctx_300vs", "serbian")
+
+    # Step 2. Load the ngram vectors, vector space and word map files
+    ngram_vectors = deserialize_object(cfg.language_config.get_ngram_vectors_file_path())
+    word_map = deserialize_object(cfg.language_config.get_word_map_file_path())
+    vector_space = deserialize_object(cfg.language_config.get_vector_space_file_path())
+
+    # Step 3. Run the word similarity function from the similarity module
+    # It will return a tuple of the word itself and
+    # a dictionary of words from the word map and their similarities w.r.t the passed word
+    word, similarities = word_similarity("ekonom", word_map, ngram_vectors, vector_space, cfg.model_config.ngram_size)
+
+    # Now you can do whatever you like with these similarities
+    # Here are the top 5 similarities sorted in descending order
+    print(sorted(similarities.items(), key=lambda item: item[1], reverse=True)[:5])
+
+
+def embedding_things():
+    """
+    Example function of how to use
