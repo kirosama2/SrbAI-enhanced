@@ -57,4 +57,27 @@ def similarity_for_word():
 
 def embedding_things():
     """
-    Example function of how to use
+    Example function of how to use the embedding module to embed a word or the whole current word map
+    """
+    # Step 1. Load the configurations for the model and language
+    cfg = GlobalConfig("5gram_5sctx_300vs", "serbian")
+
+    # Step 2. Load the ngram vectors, vector space and word map files
+    ngram_vectors = deserialize_object(cfg.language_config.get_ngram_vectors_file_path())
+    word_map = deserialize_object(cfg.language_config.get_word_map_file_path())
+    vector_space = deserialize_object(cfg.language_config.get_vector_space_file_path())
+
+    # Step 3.1 Use the embed word function to embed a single word into the vector space
+    # This function will return only the vector
+    vector = embed_word("ekonom", ngram_vectors, vector_space, cfg.model_config.ngram_size)
+    print(vector)
+
+    # Step 3.2 Use embed_word_map function to embed all the current words in the word map
+    # This function will return a dictionary of all the words and their embedded vector representations
+    embedded_word_map = embed_word_map(word_map, ngram_vectors, vector_space, cfg.model_config.ngram_size)
+    # Print only 5 key-value pairs
+    print(list(embedded_word_map.items())[:5])
+
+
+if __name__ == "__main__":
+    embedding_things()

@@ -1,0 +1,8 @@
+corpus_path: "./texts/serbian_corpus_short.txt"
+stopwords_path: "./texts/stopwords/serbian_stopwords.txt"
+
+io:
+  # project root
+  root: "./"
+
+  # directory in which to save all the fil
