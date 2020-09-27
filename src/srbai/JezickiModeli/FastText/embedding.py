@@ -19,4 +19,49 @@ def make_ngram_list_from_word(word: str, ngram_size: int) -> List[str]:
 
 
 def count_missing_ngrams(
-    word_ngram_list: List[st
+    word_ngram_list: List[str], ngram_vectors: Dict[str, int]
+) -> int:
+    """
+    Checks to see how many ngrams from a word are not in the dictionary of known ngrams from the preprocessed corpus
+    """
+    all_ngrams = ngram_vectors.keys()
+    return len(word_ngram_list) - sum(
+        [ngram in all_ngrams for ngram in word_ngram_list]
+    )
+
+
+def remove_missing_ngrams(
+    word_ngram_list: List[str], ngram_vectors: Dict[str, int]
+) -> List[str]:
+    """
+    Removes the ngrams not found in the original ngram dictionary
+    """
+    all_ngrams = ngram_vectors.keys()
+    return [ngram for ngram in word_ngram_list if ngram in all_ngrams]
+
+
+def word_vector(
+    word: str, ngram_vectors: Dict[str, int], ngram_size: int
+) -> Union[np.ndarray, int]:
+    """
+    Returns the vector representing the word
+
+    If there are more than 2 unknown ngrams then it returns -1.
+    2 was chosen because that is the minimum case for a new word that only has one ngram changed compared to its closest
+    word in the dictionary
+    """
+    word_ngram_list = make_ngram_list_from_word(word, ngram_size)
+    missing = count_missing_ngrams(word_ngram_list, ngram_vectors)
+
+    if (
+        (missing > 2)
+        or (len(word_ngram_list) == 1 and missing == 1)
+        or (len(word_ngram_list) == 2 and missing == 2)
+    ):
+        return -1
+
+    if missing <= 2:
+        word_ngram_list = remove_missing_ngrams(word_ngram_list, ngram_vectors)
+
+    return word_to_vector(
+        [ngram_vectors[ngram] for 
