@@ -64,4 +64,40 @@ def word_vector(
         word_ngram_list = remove_missing_ngrams(word_ngram_list, ngram_vectors)
 
     return word_to_vector(
-        [ngram_vectors[ngram] for 
+        [ngram_vectors[ngram] for ngram in word_ngram_list], ngram_vectors
+    )
+
+
+def embed_word(
+    word: str,
+    ngram_vectors: Dict[str, int],
+    vector_space: np.ndarray,
+    ngram_size: int,
+) -> Union[np.ndarray, int]:
+    """
+    Returns the embedded representation of the word in the vector space or -1 if the word can't be vectorized
+    """
+    word_vectorized = word_vector(word, ngram_vectors, ngram_size)
+
+    if isinstance(word_vectorized, int):
+        return -1
+
+    embedded = word_vectorized @ vector_space
+    return embedded
+
+
+def embed_word_map(
+    word_map: Dict[str, Dict[str, List[int]]],
+    ngram_vectors: Dict[str, int],
+    vector_space: np.ndarray,
+    ngram_size: int,
+) -> Dict[str, np.ndarray]:
+    """
+    Embeds the word map made in text preprocessing.
+
+    Returns a dict where the keys are the words and values are their embedded vectors.
+    """
+    return {
+        word: embed_word(word, ngram_vectors, vector_space, ngram_size)
+        for word in word_map.keys()
+    }
