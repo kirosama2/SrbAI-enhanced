@@ -77,4 +77,39 @@ def make_network_hyperparameters(
 
 
 def forward_one_word(
-    
+    word_vector: np.ndarray,
+    network_hyperparams: Tuple[np.ndarray, np.ndarray],
+    activation: Callable[[np.ndarray], np.ndarray],
+) -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
+    """
+    Does the forward pass for one word of the network.
+    Network hyperparameters are in a tuple of input to hidden and hidden to output weights
+
+    Returns a tuple with all the transfer and activation pairs (in order of layers),
+    with the last layers' activation being the output
+    """
+    input_2_hidden_weights, hidden_2_output_weights = network_hyperparams
+
+    input_2_hidden_transfer = word_vector @ input_2_hidden_weights
+    input_2_hidden_activation = activation(input_2_hidden_transfer)
+
+    hidden_2_output_transfer = input_2_hidden_activation @ hidden_2_output_weights
+    hidden_2_output_activation = softmax(hidden_2_output_transfer)
+
+    return (input_2_hidden_transfer, input_2_hidden_activation), (
+        hidden_2_output_transfer,
+        hidden_2_output_activation,
+    )
+
+
+def backward_one_word(
+    word_vector: np.ndarray,
+    context_matrix: np.ndarray,
+    forward_results: Tuple[
+        Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]
+    ],
+    network_hyperparams: Tuple[np.ndarray, np.ndarray],
+    activation_derivative: Callable[[np.ndarray], np.ndarray],
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Takes the word vector it's working on currently, as w
