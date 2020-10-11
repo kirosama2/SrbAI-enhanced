@@ -152,4 +152,50 @@ def loss_one_word(word_output: np.ndarray, context_matrix: np.ndarray) -> float:
 
 def update_hyperparameter(
     hyperparameter: np.ndarray,
-    grad_hyperparameter: np.nda
+    grad_hyperparameter: np.ndarray,
+    m: np.ndarray,
+    v: np.ndarray,
+    optimizer_params: Dict[str, float],
+    learn_rate: float,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Does ADAM optimization on hyperparameter
+
+    Returns the newly calculated hyperparameter and optimizer parameters
+    """
+    new_m = (
+        optimizer_params["omega1"] * m
+        + (1 - optimizer_params["omega1"]) * grad_hyperparameter
+    )
+    new_v = optimizer_params["omega2"] * v + (1 - optimizer_params["omega2"]) * (
+        grad_hyperparameter**2
+    )
+
+    m_hat = new_m / (1 - optimizer_params["omega1"])
+    v_hat = np.abs(new_v) / (1 - optimizer_params["omega2"])
+
+    new_hyperparameter = (
+        hyperparameter
+        - (learn_rate / (v_hat + optimizer_params["norm"]) ** 0.5) * m_hat
+    )
+    return new_hyperparameter, new_m, new_v
+
+
+def one_word_iteration(
+    word_vector: np.ndarray,
+    context_matrix: np.ndarray,
+    network_hyperparameters: Tuple[np.ndarray, np.ndarray],
+    ms: Tuple[np.ndarray, np.ndarray],
+    vs: Tuple[np.ndarray, np.ndarray],
+    optimizer_params: Dict[str, float],
+    learn_rate: float,
+) -> Tuple[
+    Tuple[np.ndarray, np.ndarray],
+    float,
+    Tuple[np.ndarray, np.ndarray],
+    Tuple[np.ndarray, np.ndarray],
+]:
+    """
+    Does forward pass, loss calculation, backward pass and hyperparameter optimization for one word
+
+    Returns the new hyperparameters and loss for that word, as well as the newly calculated optimizer paramet
