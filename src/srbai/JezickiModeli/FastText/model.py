@@ -112,4 +112,44 @@ def backward_one_word(
     activation_derivative: Callable[[np.ndarray], np.ndarray],
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Takes the word vector it's working on currently, as w
+    Takes the word vector it's working on currently, as well as its context.
+    Also, the results for all steps in the forward pass and the weights for each layer
+
+    Returns gradients for the network hyperparameters in the order of layers
+    """
+    _, hidden_2_output_weights = network_hyperparams
+    (input_2_hidden_transfer, input_2_hidden_activation), (
+        _,
+        hidden_2_output_activation,
+    ) = forward_results
+
+    grad_hidden_2_output_transfer = (
+        np.sum(hidden_2_output_activation - context_matrix, axis=0, keepdims=True)
+        / context_matrix.shape[0]
+    )
+    grad_hidden_2_output_weights = (
+        input_2_hidden_activation.T @ grad_hidden_2_output_transfer
+    )
+
+    grad_input_2_hidden_activation = (
+        grad_hidden_2_output_transfer @ hidden_2_output_weights.T
+    )
+    grad_input_2_hidden_transfer = (
+        grad_input_2_hidden_activation * activation_derivative(input_2_hidden_transfer)
+    )
+    grad_input_2_hidden_weights = word_vector.T @ grad_input_2_hidden_transfer
+
+    return grad_input_2_hidden_weights, grad_hidden_2_output_weights
+
+
+def loss_one_word(word_output: np.ndarray, context_matrix: np.ndarray) -> float:
+    """
+    Calculates log loss for a single word based on its output and context
+    """
+    loss = np.sum(-1 * (context_matrix * np.log(word_output)))
+    return loss / context_matrix.shape[0]
+
+
+def update_hyperparameter(
+    hyperparameter: np.ndarray,
+    grad_hyperparameter: np.nda
