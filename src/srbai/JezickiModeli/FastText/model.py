@@ -198,4 +198,50 @@ def one_word_iteration(
     """
     Does forward pass, loss calculation, backward pass and hyperparameter optimization for one word
 
-    Returns the new hyperparameters and loss for that word, as well as the newly calculated optimizer paramet
+    Returns the new hyperparameters and loss for that word, as well as the newly calculated optimizer parameters
+    """
+    forward_results = forward_one_word(word_vector, network_hyperparameters, tanh)
+
+    _, (_, hidden_2_output_activation) = forward_results
+    loss = loss_one_word(hidden_2_output_activation, context_matrix)
+
+    grad_hyperparameters = backward_one_word(
+        word_vector,
+        context_matrix,
+        forward_results,
+        network_hyperparameters,
+        tanh_derivative,
+    )
+
+    input_2_hidden_updated, hidden_2_output_updated = tuple(
+        update_hyperparameter(
+            hyperparameter, grad_hyperparameter, m, v, optimizer_params, learn_rate
+        )
+        for hyperparameter, grad_hyperparameter, m, v in zip(
+            network_hyperparameters, grad_hyperparameters, ms, vs
+        )
+    )
+
+    return (
+        (input_2_hidden_updated[0], hidden_2_output_updated[0]),
+        loss,
+        (input_2_hidden_updated[1], hidden_2_output_updated[1]),
+        (input_2_hidden_updated[2], hidden_2_output_updated[2]),
+    )
+
+
+def train(
+    word_map: Dict[str, Dict[str, List[int]]],
+    ngram_vector_map: Dict[str, int],
+    word_vector_map: Dict[str, int],
+    model_config: ModelConfig,
+    plot_graph: bool = False,
+) -> np.ndarray:
+    """
+    Given a word map with input vectors and their context vectors, embeds the vector space.
+    plot_graph - whether to plot the loss graph
+    """
+    words = [*word_map.keys()]
+    hyperparameters = make_network_hyperparameters(
+        len(ngram_vector_map),
+        model_co
