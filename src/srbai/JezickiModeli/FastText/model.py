@@ -244,4 +244,30 @@ def train(
     words = [*word_map.keys()]
     hyperparameters = make_network_hyperparameters(
         len(ngram_vector_map),
-        model_co
+        model_config.vector_space_size,
+        len(word_vector_map),
+    )
+
+    total_loss = []
+    for _ in tqdm.tqdm(range(model_config.epochs)):
+        epoch_loss = 0.0
+        ms = vs = (0.0, 0.0)
+
+        np.random.shuffle(words)
+        for word in words:
+            word_dict = itemgetter(word)(word_map)
+            word_vector = word_to_vector(word_dict["input"], ngram_vector_map)
+            word_context = make_context_matrix(word_dict["context"], word_vector_map)
+
+            hyperparameters, word_loss, ms, vs = one_word_iteration(
+                word_vector, word_context, hyperparameters, ms, vs, model_config.optimizer, model_config.learn_rate
+            )
+            epoch_loss += word_loss
+
+        total_loss.append(epoch_loss)
+
+    if plot_graph:
+        plt.plot(total_loss)
+        plt.show()
+
+    return hyperparameters[0]
