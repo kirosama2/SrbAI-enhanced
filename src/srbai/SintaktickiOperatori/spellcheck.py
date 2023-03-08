@@ -61,4 +61,39 @@ class SpellCheck:
                 self.search_trie(node[c], word[1:], cost + 1, results)
     def lev_distance(self,s, t):
         m, n = len(s), len(t)
-        d = np.zeros((m+1,
+        d = np.zeros((m+1, n+1), dtype=int)
+        for i in range(m+1):
+            d[i,0] = i
+        for j in range(n+1):
+            d[0,j] = j
+        for j in range(1,n+1):
+            for i in range(1,m+1):
+                if s[i-1] == t[j-1]:
+                    cost = 0
+                else:
+                    cost = 1
+                d[i,j] = min(d[i-1,j]+1, d[i,j-1]+1, d[i-1,j-1]+cost)
+        return d[m,n]
+
+    def find_closest(self,word,candidates):
+        min_distance = float('inf')
+        closest_word = None
+        for dict_word1 in candidates:
+            dict_word = dict_word1
+            distance = self.lev_distance(word, dict_word)
+            if distance < min_distance:
+                min_distance = distance
+                closest_word = dict_word
+        return closest_word
+
+
+    def spellcheck(self, query):
+        results = []
+        self.search_trie(self.trie, query, 0, results)
+        results = list(set(val[0] for val in results))
+        result = self.find_closest(query,results)
+
+        return result
+# Example usage:
+
+
