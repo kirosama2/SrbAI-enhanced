@@ -359,4 +359,64 @@ dictionary = {
     'htedosmo': 'hteti',
     'htedoste': 'hteti',
     'htedosxe': 'hteti',
-    'hteh
+    'hteh': 'hteti',
+    'hteti': 'hteti',
+    'htejucyi': 'hteti',
+    'htevsxi': 'hteti',
+    # glagol moći
+    'mogu': 'mocyi',
+    'možeš': 'mocyi',
+    'može': 'mocyi',
+    'možemo': 'mocyi',
+    'možete': 'mocyi',
+    'mogao': 'mocyi',
+    'mogli': 'mocyi',
+    'moći': 'mocyi'
+}
+
+
+def stem_arr(text: str) -> List[str]:
+    """
+    
+    :param text:
+    :return:
+    """
+    text = text.lower()
+    text = text.replace("š", "sx")
+    text = text.replace("č", "cx")
+    text = text.replace("ć", "cy")
+    text = text.replace("đ", "dx")
+    text = text.replace("ž", "zx")
+    lam = word_tokenize(text)
+    i = 0
+    for word in lam:
+        for key in dictionary:
+            if key == word:
+                lam[i] = dictionary[key]
+                break
+        for key in rules:
+            if (word.endswith(key) and len(word) - len(key) > 2):
+                lam[i] = word[:-len(key)] + rules[key]
+                break
+        i = i + 1
+    return lam
+
+
+def stem_str(text: str) -> str:
+    '''
+
+    :param text:
+    :return:
+    '''
+    text = text.lower()
+    text = text.replace("š", "sx")
+    text = text.replace("č", "cx")
+    text = text.replace("ć", "cy")
+    text = text.replace("đ", "dx")
+    text = text.replace("ž", "zx")
+    text = text.replace("Š", "sx")
+    text = text.replace("Č", "cx")
+    text = text.replace("Ć", "cy")
+    text = text.replace("Đ", "dx")
+    text = text.replace("Ž", "zx")
+    text = text.replace("“
