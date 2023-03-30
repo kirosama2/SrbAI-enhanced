@@ -419,4 +419,27 @@ def stem_str(text: str) -> str:
     text = text.replace("Ć", "cy")
     text = text.replace("Đ", "dx")
     text = text.replace("Ž", "zx")
-    text = text.replace("“
+    text = text.replace("“", "\"")
+    text = text.replace("\"", "")
+    text = text.replace("”", "\"")
+    text = text.replace("'", "\"")
+    text = text.replace("’", "\"")
+    text = text.replace("€", "eur")
+    text = text.replace("„", "\"")
+    lam = word_tokenize(text)
+    i = 0
+    for word in lam:
+        for key in dictionary:
+            if key == word:
+                lam[i] = dictionary[key]
+                break
+        for key in rules:
+            # Tokenize only words larger than 2 characters, apart from modal verbs
+            if (word.endswith(key) and len(word) - len(key) > 2):
+                lam[i] = word[:-len(key)] + rules[key]
+                break
+        i = i + 1
+    end_str = ""
+    for word in lam:
+        end_str = end_str + " " + word
+    return end_str
